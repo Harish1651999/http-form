@@ -15,51 +15,11 @@ const CreatedJob = (props) => {
       console.log(error);
     }
   };
-  const data = [
-    {
-      img: "/assets/images/netflix.png",
-      jobtitle: "UX UI Designer",
-      companyName: "Great Vibes - Information Technology",
-      companyLocation: "Chennai, Tamilnadu, India (In-office)",
-      timing: "Part-Time (9.00 am - 5.00 pm IST)",
-      experience: "Experience (1 - 2 years)",
-      salary: "INR (₹) 30,000 - 50,000 / Month",
-      noOfEmp: "51-200 employees",
-    },
-    {
-      img: "/assets/images/netflix.png",
-      jobtitle: "UX UI Designer",
-      companyName: "Great Vibes - Information Technology",
-      companyLocation: "Chennai, Tamilnadu, India (In-office)",
-      timing: "Part-Time (9.00 am - 5.00 pm IST)",
-      experience: "Experience (1 - 2 years)",
-      salary: "INR (₹) 30,000 - 50,000 / Month",
-      noOfEmp: "51-200 employees",
-    },
-    {
-      img: "/assets/images/netflix.png",
-      jobtitle: "UX UI Designer",
-      companyName: "Great Vibes - Information Technology",
-      companyLocation: "Chennai, Tamilnadu, India (In-office)",
-      timing: "Part-Time (9.00 am - 5.00 pm IST)",
-      experience: "Experience (1 - 2 years)",
-      salary: "INR (₹) 30,000 - 50,000 / Month",
-      noOfEmp: "51-200 employees",
-    },
-    {
-      img: "/assets/images/netflix.png",
-      jobtitle: "UX UI Designer",
-      companyName: "Great Vibes - Information Technology",
-      companyLocation: "Chennai, Tamilnadu, India (In-office)",
-      timing: "Part-Time (9.00 am - 5.00 pm IST)",
-      experience: "Experience (1 - 2 years)",
-      salary: "INR (₹) 30,000 - 50,000 / Month",
-      noOfEmp: "51-200 employees",
-    },
-  ];
+
   useEffect(() => {
     getData();
   }, [props?.FormIsShown]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-full">
       {jobDetails?.map((data) => (
@@ -75,11 +35,7 @@ const CreatedJob = (props) => {
             <h4 className="text-2xl">{data?.jobTitle}</h4>
             <p className="font-medium">{data?.companyName}</p>
             <p className="text-sm text-grey mb-5">{data?.location}</p>
-            <p className="mb-1">
-              {data?.timing
-                ? data?.timing
-                : "Part-Time (9.00 am - 5.00 pm IST)"}
-            </p>
+            <p className="mb-1">Part-Time (9.00 am - 5.00 pm IST)</p>
             <p className="mb-1">{`Experience (${data?.experienceMin}  - ${data?.experienceMax} years)`}</p>
             <p className="mb-1">{`INR (₹) ${data?.salaryMin} - ${data?.salaryMax} / Month`}</p>
             <p className="mb-4">{data?.totalEmployee} employees </p>

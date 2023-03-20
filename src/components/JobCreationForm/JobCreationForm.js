@@ -5,10 +5,7 @@ import { useForm } from "react-hook-form";
 
 const JobCreationForm = (props) => {
   const [showForm, setShowForm] = useState(true);
-  const formSubmitHandler = (event) => {
-    event.preventDefault();
-    setShowForm(false);
-  };
+
   const [errorvalidation, setErrorValidation] = useState({
     jobTitle: false,
     companyName: false,
