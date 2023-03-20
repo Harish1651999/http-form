@@ -20,7 +20,7 @@ function App() {
       >
         Create Job
       </button>
-      <CreatedJob />
+      <CreatedJob FormIsShown={FormIsShown} />
       {FormIsShown && <JobCreationForm onClose={hideFormHandler} />}
     </div>
   );

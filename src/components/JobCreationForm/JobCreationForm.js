@@ -1,11 +1,66 @@
 import React, { useState } from "react";
+import { service } from "../../service";
 import Modal from "../UI/Modal";
+import { useForm } from "react-hook-form";
 
 const JobCreationForm = (props) => {
   const [showForm, setShowForm] = useState(true);
   const formSubmitHandler = (event) => {
     event.preventDefault();
     setShowForm(false);
+  };
+  const [errorvalidation, setErrorValidation] = useState({
+    jobTitle: false,
+    companyName: false,
+    industry: false,
+    ratioBtn: false,
+  });
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    setValue,
+  } = useForm();
+
+  const saveHandler = async (data) => {
+    console.log(data);
+    if (showForm) {
+      if (data?.jobTitle && data?.companyName && data?.industry) {
+        setShowForm(false);
+      } else {
+        let errormessage = errorvalidation;
+        if (!data?.jobTitle) {
+          errormessage = { ...errormessage, ["jobTitle"]: true };
+        } else {
+          errormessage = { ...errormessage, ["jobTitle"]: false };
+        }
+        if (!data?.companyName) {
+          errormessage = { ...errormessage, ["companyName"]: true };
+        } else {
+          errormessage = { ...errormessage, ["companyName"]: false };
+        }
+        if (!data?.industry) {
+          errormessage = { ...errormessage, ["industry"]: true };
+        } else {
+          errormessage = { ...errormessage, ["industry"]: false };
+        }
+        setErrorValidation(errormessage);
+      }
+    } else {
+      if (watch("isExternalApply") || watch("isQuickApply")) {
+        await service.post("/createJob", {
+          ...data,
+          ["isExternalApply"]: data?.isExternalApply ? true : false,
+          ["isQuickApply"]: data?.isQuickApply ? true : false,
+        });
+        props.onClose();
+      } else {
+        setErrorValidation({ ...errorvalidation, ["ratioBtn"]: true });
+      }
+    }
+    // service.post("/createJob",);
   };
 
   return (
@@ -16,7 +71,7 @@ const JobCreationForm = (props) => {
           {showForm ? "Step 1" : "Step 2"}
         </p>
       </div>
-      <form onSubmit={formSubmitHandler}>
+      <form onSubmit={handleSubmit(saveHandler)}>
         {showForm && (
           <>
             <div className="mb-8 relative">
@@ -27,10 +82,13 @@ const JobCreationForm = (props) => {
                 type="text"
                 className="border rounded-md w-full py-2 px-2"
                 placeholder="ex. UX UI Designer"
+                {...register("jobTitle")}
               />
-              <p className="text-xs absolute -bottom-5 text-red">
-                * Please enter the job title
-              </p>
+              {errorvalidation?.jobTitle && (
+                <p className="text-xs absolute -bottom-5 text-red">
+                  * Please enter the job title
+                </p>
+              )}
             </div>
             <div className="mb-8 relative">
               <label className="text-sm font-medium block mb-1">
@@ -40,10 +98,13 @@ const JobCreationForm = (props) => {
                 type="text"
                 className="border rounded-md w-full py-2 px-2"
                 placeholder="ex. Google"
+                {...register("companyName")}
               />
-              <p className="text-xs absolute -bottom-5 text-red">
-                * Please enter the company name
-              </p>
+              {errorvalidation?.companyName && (
+                <p className="text-xs absolute -bottom-5 text-red">
+                  * Please enter the company name
+                </p>
+              )}
             </div>
             <div className="mb-8 relative">
               <label className="text-sm font-medium block mb-1">
@@ -53,10 +114,13 @@ const JobCreationForm = (props) => {
                 type="text"
                 className="border rounded-md w-full py-2 px-2"
                 placeholder="ex. Information Technology"
+                {...register("industry")}
               />
-              <p className="text-xs absolute -bottom-5 text-red">
-                * Please enter the industry
-              </p>
+              {errorvalidation?.industry && (
+                <p className="text-xs absolute -bottom-5 text-red">
+                  * Please enter the industry
+                </p>
+              )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-full">
               <div className="mb-6">
@@ -67,6 +131,7 @@ const JobCreationForm = (props) => {
                   type="text"
                   className="border rounded-md w-full py-2 px-2"
                   placeholder="ex. Chennai"
+                  {...register("location")}
                 />
               </div>
               <div className="mb-6">
@@ -77,6 +142,7 @@ const JobCreationForm = (props) => {
                   type="text"
                   className="border rounded-md w-full py-2 px-2"
                   placeholder="ex. In-office"
+                  {...register("remoteType")}
                 />
               </div>
             </div>
@@ -93,11 +159,13 @@ const JobCreationForm = (props) => {
                   type="text"
                   className="border rounded-md w-full py-2 px-2"
                   placeholder="Minimum"
+                  {...register("experienceMin")}
                 />
                 <input
                   type="text"
                   className="border rounded-md w-full py-2 px-2"
                   placeholder="Maximum"
+                  {...register("experienceMax")}
                 />
               </div>
             </div>
@@ -108,11 +176,13 @@ const JobCreationForm = (props) => {
                   type="text"
                   className="border rounded-md w-full py-2 px-2"
                   placeholder="Minimum"
+                  {...register("salaryMin")}
                 />
                 <input
                   type="text"
                   className="border rounded-md w-full py-2 px-2"
                   placeholder="Maximum"
+                  {...register("salaryMax")}
                 />
               </div>
             </div>
@@ -124,15 +194,27 @@ const JobCreationForm = (props) => {
                 type="text"
                 className="border rounded-md w-full py-2 px-2"
                 placeholder="ex. 100"
+                {...register("totalEmployee")}
               />
             </div>
-            <div className="mb-8">
+
+            <div className="mb-8 position-relative">
               <label className="text-sm font-medium block mb-3">
                 Apply type
               </label>
               <div className="flex items-center">
                 <div className="flex items-center">
-                  <input type="radio" id="quickApply" value="Quick apply" />
+                  <input
+                    type="radio"
+                    id="quickApply"
+                    // value="Quick apply"
+                    //  {...register("isQuickApply")}
+                    value={watch("isQuickApply")}
+                    onClick={(e) => {
+                      console.log(e);
+                      setValue("isQuickApply", !e.target.value);
+                    }}
+                  />
                   <label
                     className="text-grey text-sm cursor-pointer ml-1"
                     htmlFor="quickApply"
@@ -144,7 +226,11 @@ const JobCreationForm = (props) => {
                   <input
                     type="radio"
                     id="externalApply"
-                    value="External apply"
+                    value={watch("isExternalApply")}
+                    // {...register("isExternalApply")}
+                    onChange={(e) => {
+                      setValue("isExternalApply", !e.target.value);
+                    }}
                   />
                   <label
                     className="text-grey text-sm cursor-pointer ml-1"
@@ -154,6 +240,11 @@ const JobCreationForm = (props) => {
                   </label>
                 </div>
               </div>
+              {errorvalidation?.ratioBtn && (
+                <p className="text-xs absolute text-red">
+                  * Please select one apply type
+                </p>
+              )}
             </div>
           </>
         )}
